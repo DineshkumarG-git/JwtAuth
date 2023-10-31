@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,17 @@ public class JwtService {
     {
 
         return extractClaim(token , Claims::getSubject) ;
+    }
+
+    public boolean isValidToken(String token , UserDetails userDetails)
+    {
+        final String userName  = extractUserName(token);
+       return userName.equals(userDetails.getUsername()) && !isExpired(token);
+
+    }
+    public boolean isExpired(String token)
+    {
+       return   extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
     public <T> T extractClaim(String token , Function<Claims,T> claimResolver)
