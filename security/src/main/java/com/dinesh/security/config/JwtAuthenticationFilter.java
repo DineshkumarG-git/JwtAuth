@@ -10,6 +10,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -35,7 +36,7 @@ public class JwtAuthenticationFilter  extends OncePerRequestFilter {
         var userEmail  =  jwtService.extractUserName(jwt);
         if(userEmail!=null  && SecurityContextHolder.getContext().getAuthentication()  == null) // if the user is not authenticated we use to check whether the user is present
         {
-                 userDetailService.findByEmail(userEmail);
+             UserDetails userDetails  =  userDetailService.findByEmail(userEmail);
         }
 
     }

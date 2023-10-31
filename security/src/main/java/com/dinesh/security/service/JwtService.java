@@ -1,10 +1,10 @@
 package com.dinesh.security.service;
 
-import com.dinesh.security.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +25,15 @@ public class JwtService {
         return extractClaim(token , Claims::getSubject) ;
     }
 
-    public boolean isValidToken(String token , User userDetails)
+    public boolean isValidToken(String token , UserDetails userDetails)
     {
         final String userName  = extractUserName(token);
-       return userName.equals(userDetails.getUsername()) && !isExpired(token);
+        return  userName.equals(userDetails.getUsername()) && isExpired(token);
 
     }
     public boolean isExpired(String token)
     {
-       return   extractClaim(token, Claims::getExpiration).before(new Date());
+      return    extractClaim(token, Claims::getExpiration).before(new Date());
     }
 
     public <T> T extractClaim(String token , Function<Claims,T> claimResolver)
@@ -42,12 +42,12 @@ public class JwtService {
        return   claimResolver.apply(claims) ;
     }
 
-    public  String generateToken(User userDetails)
+    public  String generateToken(UserDetails userDetails)
     {
         return  generateToken(new HashMap<>() , userDetails);
     }
 
-    public  String generateToken(Map<String ,Object> extraClaims , User userDetails)
+    public  String generateToken(Map<String ,Object> extraClaims , UserDetails userDetails)
     {
         return Jwts.builder().setClaims(extraClaims).setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis()* 1000*60*24) ).compact();
