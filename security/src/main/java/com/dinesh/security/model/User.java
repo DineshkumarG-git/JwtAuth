@@ -3,6 +3,7 @@ package com.dinesh.security.model;
 import com.dinesh.security.enums.Role;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.*;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name  = "_user")
+@Builder
 public class User implements UserDetails {
 
     @Id
