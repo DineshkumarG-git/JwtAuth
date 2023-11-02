@@ -6,6 +6,8 @@ import com.dinesh.security.Dto.RegisterRequest;
 import com.dinesh.security.enums.Role;
 import com.dinesh.security.model.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +19,8 @@ public class AuthenticationService
     private final UserService userService ;
     private final JwtService jwtService ;
     private final PasswordEncoder passwordEncoder ;
+
+    private final AuthenticationManager authenticationManager ;
     public AuthenticationResponse register(RegisterRequest registerRequest)
     {
         var user = User.builder().email( registerRequest.getEmail()).firstName(registerRequest.getFirstName())
@@ -31,7 +35,11 @@ public class AuthenticationService
 
     public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest)
     {
-        return  null;
+        authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail() , authenticationRequest.getPassWord())) ;
+        var user = userService.findByEmail( authenticationRequest.getEmail());
+        var jwtToken = jwtService.generateToken(user);
+
+        return  AuthenticationResponse.builder().token(jwtToken).build() ;
     }
 
 }
